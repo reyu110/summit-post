@@ -258,12 +258,14 @@
         <article class="step-card" data-step="5">
           <div class="card-icon">🎙️</div>
           <h2>Teach it your voice</h2>
-          <p class="lead">Paste up to five of your own past tweets. The model copies your capitalisation, pacing and punctuation from these — it's the single biggest quality lever.</p>
+          <p class="lead">This is what makes posts sound like <i>you</i> instead of generic. Pick some of your own past posts straight from your X archive, or paste them in. The bot copies your phrasing, capitalisation and rhythm from them.</p>
+          <div id="archiveHost"></div>
           <div class="voice-list" id="voiceList"></div>
+          <p class="note">No posts yet? Write three or four short ones the way you'd naturally say it. Nothing about anyone else's voice ships with this tool.</p>
           <div class="verdict" id="verdict-voice"></div>
           <div class="actions">
             <button class="btn btn-ghost" data-back>← Back</button>
-            <button class="btn btn-soft" data-next>Skip for now</button>
+            <button class="btn btn-ghost" data-next>Skip (posts will sound generic)</button>
             <button class="btn btn-primary" id="saveVoiceBtn">Save voice →</button>
           </div>
         </article>
@@ -369,6 +371,7 @@
         <div class="compose-out hidden" id="composeOut">
           <div class="headline-tag" id="headlineTag"></div>
           <textarea id="draftText" maxlength="280" rows="4"></textarea>
+          <p class="note hidden" id="voiceHint">This draft is in a generic voice. Add some of your own posts under <b>Voice samples</b> and it will sound like you.</p>
           <div class="compose-foot">
             <span class="counter" id="charCount">0 / 280</span>
             <div>
@@ -390,7 +393,7 @@
         <button class="tool" id="sourcesBtn"><span>📡</span><b>Sources</b><i id="sourcesSub">Feeds, ideas and news</i></button>
         <button class="tool" id="personaBtn"><span>🎯</span><b>Persona</b><i>Who the bot writes as</i></button>
         <button class="tool" id="cloudBtn"><span>☁️</span><b>Cloud</b><i>Post with your computer off</i></button>
-        <button class="tool" id="voiceBtn"><span>🎙️</span><b>Voice samples</b><i>Teach it how you write</i></button>
+        <button class="tool" id="voiceBtn"><span>🎙️</span><b>Voice samples</b><i id="voiceSub">Teach it how you write</i></button>
         <button class="tool" id="playbookBtn"><span>📈</span><b>Growth playbook</b><i>Rules that shape every post</i></button>
         <button class="tool" id="logsBtn"><span>📜</span><b>Activity log</b><i>What the bot has been doing</i></button>
       </div>

@@ -179,26 +179,80 @@ async function loadChannels() {
 }
 
 /* ---------------- voice ---------------- */
+const VOICE_MAX = 8;
+
+// One box per sample, and never fewer than five. (It used to cap at five, so saving silently dropped the rest.)
+const voiceRows = values => Array.from({ length: Math.max(5, values.length) }, (_, i) => `
+  <div class="voice-row">
+    <textarea rows="2" placeholder="Paste one of your past posts…">${esc(values[i] || '')}</textarea>
+    <span class="idx">${i + 1}</span>
+  </div>`).join('');
+
 async function loadVoice() {
   const r = await api('/api/voice_examples');
-  const ex = [...r.examples];
-  while (ex.length < 5) ex.push('');
-  $('#voiceList').innerHTML = ex.slice(0, 5).map((v, i) => `
-    <div class="voice-row">
-      <textarea rows="2" placeholder="Paste past tweet #${i + 1}…">${v.replace(/</g, '&lt;')}</textarea>
-      <span class="idx">${i + 1}</span>
-    </div>`).join('');
+  $('#voiceList').innerHTML = voiceRows(r.examples);
+  mountArchivePicker($('#archiveHost'), () => $('#voiceList'));
 }
 
-async function saveVoice(silent = false) {
+async function saveVoice() {
   const examples = $$('#voiceList textarea').map(t => t.value.trim()).filter(Boolean);
+  if (!examples.length) { setVerdict('voice', '✕ Add at least one post, or choose Skip.', 'bad'); return; }
   await api('/api/voice_examples', { method: 'POST', body: { examples } });
-  if (!silent) {
-    setVerdict('voice', `<span class="tick">✓</span> Saved ${examples.length} sample${examples.length === 1 ? '' : 's'}.`, 'good');
-    if (examples.length) confetti(innerWidth / 2, innerHeight / 2, 40);
-    setTimeout(() => showStep(step + 1), 700);
-  }
-  return examples.length;
+  setVerdict('voice', `<span class="tick">✓</span> Saved ${examples.length} sample${examples.length === 1 ? '' : 's'}.`, 'good');
+  confetti(innerWidth / 2, innerHeight / 2, 40);
+  setTimeout(() => showStep(step + 1), 700);
+}
+
+// Lets someone pick their samples from their own X archive (the file is read by this local server only).
+function mountArchivePicker(host, getList) {
+  host.innerHTML = `
+    <div class="archive-box">
+      <button class="btn btn-soft" type="button" data-archive-btn>📥 Pick from my X archive</button>
+      <p class="note">On X: <b>Settings → Your account → Download an archive of your data</b>. Unzip it and choose <code>data/tweets.js</code>. It's read on this computer only, and nothing else in the archive is opened.</p>
+      <input type="file" accept=".js" multiple hidden data-archive-file>
+      <div class="archive-out hidden" data-archive-out></div>
+    </div>`;
+  const input = $('[data-archive-file]', host), out = $('[data-archive-out]', host);
+  $('[data-archive-btn]', host).onclick = () => input.click();
+  input.onchange = async () => {
+    if (!input.files.length) return;
+    out.classList.remove('hidden');
+    out.innerHTML = '<div class="loading-row"><span class="spinner"></span> Reading your archive…</div>';
+    const form = new FormData();
+    [...input.files].forEach(f => form.append('files', f));
+    let r;
+    try { r = await (await fetch('/api/voice/archive', { method: 'POST', body: form })).json(); }
+    catch (e) { r = { ok: false, error: "Couldn't read that file. Choose tweets.js from the data folder." }; }
+    input.value = '';
+    if (!r.ok) { out.innerHTML = `<div class="verdict bad">✕ ${esc(r.error)}</div>`; return; }
+    renderArchivePicks(out, r, getList);
+  };
+}
+
+function renderArchivePicks(out, r, getList) {
+  out.innerHTML = `
+    <p class="note"><b>${r.posts.length}</b> usable posts found among ${r.total.toLocaleString()} in your archive (retweets, replies and link-only posts are skipped). Pick up to ${VOICE_MAX} that sound most like you.</p>
+    <div class="pick-list">${r.posts.map((p, i) => `
+      <label class="pick"><input type="checkbox" value="${i}">
+        <span><span class="pick-text">${esc(p.text)}</span><i>${esc(p.date)}${p.likes || p.retweets ? ` · ${p.likes} likes · ${p.retweets} reposts` : ''}</i></span></label>`).join('')}</div>
+    <div class="pick-foot"><span class="counter" data-pick-count>0 / ${VOICE_MAX} chosen</span>
+      <button class="btn btn-primary" type="button" data-pick-use disabled>Use these</button></div>`;
+  const boxes = $$('input[type=checkbox]', out), count = $('[data-pick-count]', out), use = $('[data-pick-use]', out);
+  const update = () => {
+    const n = boxes.filter(b => b.checked).length;
+    count.textContent = `${n} / ${VOICE_MAX} chosen`;
+    use.disabled = n === 0;
+    boxes.forEach(b => { if (!b.checked) b.disabled = n >= VOICE_MAX; });
+  };
+  boxes.forEach(b => b.onchange = update);
+  use.onclick = () => {
+    const chosen = boxes.filter(b => b.checked).map(b => r.posts[+b.value].text);
+    const list = getList();
+    const typed = $$('textarea', list).map(t => t.value.trim()).filter(Boolean);
+    list.innerHTML = voiceRows([...chosen, ...typed.filter(x => !chosen.includes(x))].slice(0, VOICE_MAX));
+    out.classList.add('hidden');
+    toast(`${chosen.length} of your posts added. Look them over, then save.`);
+  };
 }
 
 /* ---------------- schedule ---------------- */
@@ -366,6 +420,9 @@ async function loadDashboard() {
   $('#statToday').textContent = state.next_posts.length;
   $('#statTotal').textContent = state.total_posts;
   $('#statVoice').textContent = state.voice_examples_count;
+  const n = state.voice_examples_count;
+  $('#voiceSub').textContent = n === 0 ? 'Add yours: posts sound generic without' : n < 3 ? `${n} so far. Three or more works best` : `${n} samples`;
+  $('#voiceBtn').classList.toggle('nudge', n < 3);
   startCountdown(state.next_posts[0]);
 
   $('#slotList').innerHTML = state.next_posts.length
@@ -391,6 +448,7 @@ async function draft() {
   draftKey = r.key;
   $('#headlineTag').textContent = (r.kind === 'idea' ? '💡 ' : '📰 ') + r.source_headline;
   $('#draftText').value = r.tweet;
+  $('#voiceHint').classList.toggle('hidden', state.voice_examples_count > 0);
   updateCount();
 }
 
@@ -418,17 +476,17 @@ const closeModal = () => $('#modalBack').classList.add('hidden');
 
 async function modalVoice() {
   const r = await api('/api/voice_examples');
-  const ex = [...r.examples]; while (ex.length < 5) ex.push('');
   openModal('Voice samples',
-    `<p class="panel-note">Five of your own tweets. The model copies your rhythm and capitalisation from these.</p>
-     <div class="voice-list">${ex.slice(0, 5).map((v, i) =>
-      `<div class="voice-row"><textarea rows="2" placeholder="Past tweet #${i + 1}…">${v.replace(/</g, '&lt;')}</textarea><span class="idx">${i + 1}</span></div>`).join('')}</div>`,
+    `<p class="panel-note">Your own past posts. The bot copies your phrasing, capitalisation and rhythm from these. Around five works well; up to ${VOICE_MAX}.</p>
+     <div id="mArchiveHost"></div>
+     <div class="voice-list" id="mVoiceList">${voiceRows(r.examples)}</div>`,
     [{ label: 'Cancel', fn: closeModal },
      { label: 'Save samples', cls: 'btn-primary', fn: async () => {
-        const examples = $$('#modalBody textarea').map(t => t.value.trim()).filter(Boolean);
+        const examples = $$('#mVoiceList textarea').map(t => t.value.trim()).filter(Boolean);
         await api('/api/voice_examples', { method: 'POST', body: { examples } });
         closeModal(); toast(`Saved ${examples.length} voice sample${examples.length === 1 ? '' : 's'}`); loadDashboard();
      } }]);
+  mountArchivePicker($('#mArchiveHost'), () => $('#mVoiceList'));
 }
 
 async function modalPlaybook() {

@@ -279,6 +279,59 @@ def test_persona_draft_parsing():
         raise AssertionError(f"should have rejected {bad!r}")
 
 
+def _tweet(text, **fields):
+    return {"full_text": text, "created_at": "Tue Jun 30 17:49:10 +0000 2026", "favorite_count": "0", "retweet_count": "0", **fields}
+
+
+def _archive(*tweets, part=0, name="tweets"):
+    return f"window.YTD.{name}.part{part} = " + json.dumps([{"tweet": t} for t in tweets])
+
+
+def test_archive_import_offers_only_the_owners_own_original_posts():
+    posts = bot.parse_x_archive([
+        _archive(
+            _tweet("Rate cuts are already priced in and nobody wants to admit it https://t.co/abc", favorite_count="5"),
+            _tweet("RT @someone: this is a retweet and must be skipped entirely"),
+            _tweet("@friend this is a reply to someone and must be skipped", in_reply_to_status_id_str="1"),
+            _tweet("@friend a mention-led post with no reply flag is skipped too"),
+            _tweet("https://t.co/onlyalink"),
+            _tweet("Welp, one down."),                                                       # too short to teach a voice
+            _tweet("Rate cuts are already priced in and nobody wants to admit it"),           # duplicate once the link is gone
+            _tweet("Fish &amp; chips beat the market this quarter, change my mind\nseriously", retweet_count="3"),
+        ),
+        _archive(_tweet("A second archive part gets read and offered just the same"), part=1, name="tweet"),  # older file naming
+    ])
+    got = bot.voice_candidates(posts)
+    assert [c["text"] for c in got] == [
+        "Fish & chips beat the market this quarter, change my mind seriously",    # entity decoded, newline flattened, 3 reposts
+        "Rate cuts are already priced in and nobody wants to admit it",            # link stripped, 5 likes
+        "A second archive part gets read and offered just the same",
+    ]
+    assert got[0]["retweets"] == 3 and got[1]["likes"] == 5 and got[0]["date"] == "2026-06-30"
+
+
+def test_archive_import_rejects_files_that_are_not_an_archive():
+    for bad in ("not an archive", "", "window.YTD.tweets.part0 = {\"not\": \"a list\"}", "window.YTD.tweets.part0 = [1, 2]"):
+        try:
+            bot.parse_x_archive([bad])
+        except ValueError:
+            continue
+        raise AssertionError(f"should have rejected {bad!r}")
+
+
+def test_archive_endpoint_reads_only_what_it_is_given():
+    import io
+    import webapp
+    client = webapp.app.test_client()
+    upload = lambda payload: client.post("/api/voice/archive", data={"files": (io.BytesIO(payload), "tweets.js")},
+                                         content_type="multipart/form-data").get_json()
+    good = upload(_archive(_tweet("A perfectly ordinary original post about my day")).encode())
+    assert good["ok"] and good["total"] == 1 and good["posts"][0]["text"].startswith("A perfectly ordinary")
+    assert not upload(b"nope")["ok"]
+    assert not upload(_archive(_tweet("RT @x: only a retweet in here")).encode())["ok"]
+    assert not client.post("/api/voice/archive").get_json()["ok"]
+
+
 def test_used_list_is_pruned_to_the_newest_entries():
     used = {f"k{i}": f"2026-01-01T00:00:{i:02d}" for i in range(10)}
     assert list(bot.prune_used(used, keep=3)) == ["k7", "k8", "k9"]

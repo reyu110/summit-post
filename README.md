@@ -13,7 +13,7 @@ your computer can be off.
   articles. Or keep an **idea bank** of your own notes and it turns them into posts, using only what
   you wrote. Or both: each post picks one at random. Finance accounts can also use Finnhub market news.
 - **Sounds like you.** An AI-drafted, editable *persona* for your niche, plus your own past posts as
-  voice samples.
+  voice samples. You pick them straight from your own X archive in the dashboard (see below).
 - **Never repeats itself.** Every story and idea is used once.
 - **Posts at random times** inside a window you choose (default: 3 a day, 9am–6pm), not on the hour.
 - **You stay in control.** Automation is off until you switch it on, and you can draft, edit and publish
@@ -70,6 +70,20 @@ Once an hour a GitHub Actions job looks at today's random schedule and hands the
 its exact publish time. It saves its state back to your repo *before* posting, so a failed save can never
 cause a duplicate. If something breaks, the run turns red and GitHub emails you. Changes you make in the
 dashboard reach the cloud when you `git push`.
+
+## Making it sound like you
+
+Nothing about anyone else's voice ships with this project. The bot starts generic, and the wizard's
+**Voice** step is where it learns yours. In the dashboard, either:
+
+- **Pick from your X archive.** On X go to **Settings → Your account → Download an archive of your data**
+  (it can take a while to arrive), unzip it, and choose `data/tweets.js`. The dashboard shows your original
+  posts, skipping retweets, replies and link-only posts, and you tick the ones that sound most like you.
+  The file is read on your computer only, and nothing else in the archive is opened.
+- **Paste them in.** No posts yet? Write three or four short ones the way you'd naturally say them.
+
+Around five samples works well (up to eight). You can change them any time under **Voice samples**; the
+dashboard nudges you until you've added at least three.
 
 ## Managing it from the dashboard
 

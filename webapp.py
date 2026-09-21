@@ -33,6 +33,7 @@ app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 # Only answer requests addressed to this machine. Without this, a website open in another tab could use DNS
 # rebinding to reach the dashboard as if it were same-origin and, say, publish a post from your account.
 app.config["TRUSTED_HOSTS"] = ["localhost", "127.0.0.1"]
+app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024  # a tweets.js file is far smaller; this only stops accidents
 scheduler = BackgroundScheduler()
 scheduler.start()
 
@@ -176,6 +177,23 @@ def voice_examples():
         bot.save_voice_examples(request.json.get("examples", []))
         return jsonify(ok=True)
     return jsonify(examples=bot.load_voice_examples())
+
+
+@app.route("/api/voice/archive", methods=["POST"])
+def voice_archive():
+    """Read tweets.js (only) from the user's own X archive and offer their posts as voice samples. It's parsed
+    in memory on this machine; nothing is stored, and nothing else in the archive is ever opened."""
+    files = request.files.getlist("files")
+    if not files:
+        return jsonify(ok=False, error="Choose your tweets.js file.")
+    try:
+        posts = bot.parse_x_archive([f.read().decode("utf-8", "replace") for f in files])
+    except ValueError as e:
+        return jsonify(ok=False, error=str(e))
+    picks = bot.voice_candidates(posts)
+    if not picks:
+        return jsonify(ok=False, error="No usable original posts in that file (replies, retweets and link-only posts are skipped).")
+    return jsonify(ok=True, posts=picks, total=len(posts))
 
 
 @app.route("/api/growth_playbook", methods=["GET", "POST"])

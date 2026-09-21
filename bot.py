@@ -275,6 +275,44 @@ def mark_used(used, key):
     used[key] = datetime.now().isoformat()
 
 
+ARCHIVE_PREFIX = re.compile(r"^\s*window\.YTD\.\w+\.part\d+\s*=\s*")
+
+
+def parse_x_archive(texts):
+    """The contents of tweets.js from an X data archive (one string per file, since big archives are split
+    into several) -> every post in it. Raises ValueError if a file isn't one."""
+    posts = []
+    for text in texts:
+        try:
+            posts += [item["tweet"] for item in json.loads(ARCHIVE_PREFIX.sub("", text, count=1))]
+        except (ValueError, KeyError, TypeError):
+            raise ValueError("That doesn't look like tweets.js from an X archive.") from None
+    return posts
+
+
+def voice_candidates(posts, limit=60):
+    """The account's own original posts (no retweets, replies or link-only posts), best first, to pick voice
+    samples from. Newlines are flattened because samples are stored one per line."""
+    seen, found = set(), []
+    for post in posts:
+        raw = html.unescape(post.get("full_text", ""))
+        if raw.startswith(("RT @", "@")) or post.get("in_reply_to_status_id_str"):
+            continue
+        text = " ".join(re.sub(r"https?://\S+", "", raw).split())
+        if not 25 <= len(text) <= 280 or len(text.split()) < 5 or text.lower() in seen:
+            continue
+        seen.add(text.lower())
+        try:
+            when = datetime.strptime(post["created_at"], "%a %b %d %H:%M:%S %z %Y")
+        except (KeyError, ValueError):
+            when = datetime.min.replace(tzinfo=timezone.utc)
+        likes, reposts = int(post.get("favorite_count") or 0), int(post.get("retweet_count") or 0)
+        found.append(({"text": text, "likes": likes, "retweets": reposts,
+                       "date": when.date().isoformat() if when.year > 1 else ""}, (likes + 2 * reposts, when)))
+    found.sort(key=lambda f: f[1], reverse=True)
+    return [f[0] for f in found[:limit]]
+
+
 def _voice_examples_block():
     examples = load_voice_examples()
     if not examples:
