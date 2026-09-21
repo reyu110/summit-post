@@ -27,6 +27,17 @@ def test_pick_daily_times_within_window():
         assert times[0] < times[1] < times[2]
 
 
+class _MaxRng:
+    """An RNG stuck at the highest value randrange allows, to test the edge deterministically."""
+    def randrange(self, n):
+        return n - 1
+
+
+def test_slots_stay_inside_their_slice_even_at_the_extreme():
+    times = _pick_daily_times(datetime(2026, 9, 21, 6, 0, 0), rng=_MaxRng())
+    assert [t.strftime("%H:%M:%S") for t in times] == ["11:59:59", "14:59:59", "17:59:59"]   # never 12:00/15:00/18:00
+
+
 def test_enforce_length_truncates():
     result = _enforce_length("x" * 300)
     assert len(result) == 280

@@ -2,6 +2,7 @@ openai==3.8.0
 feedparser==6.0.14
 requests==2.34.2
 trafilatura==2.2.0
+lxml_html_clean==0.4.5  # trafilatura needs it; newer lxml no longer bundles it
 python-dotenv==1.2.3
 apscheduler==3.11.3
 flask==3.1.3

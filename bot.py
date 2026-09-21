@@ -164,7 +164,7 @@ def _pick_daily_times(now, posts_per_day=3, start_hour=9, end_hour=18, rng=rando
     times = []
     for i in range(posts_per_day):
         slice_start = window_start + timedelta(seconds=i * slice_seconds)
-        times.append(slice_start + timedelta(seconds=rng.randint(0, int(slice_seconds))))
+        times.append(slice_start + timedelta(seconds=rng.randrange(max(1, int(slice_seconds)))))  # end is exclusive
     return times
 
 
