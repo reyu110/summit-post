@@ -120,7 +120,7 @@ you use the cloud option), and **Google Fonts** (the dashboard's typefaces).
 
 **Template users:** the first time,
 ```bash
-git remote add upstream https://github.com/reyu110/summit-post-template.git
+git remote add upstream https://github.com/reyu110/summit-post.git
 git fetch upstream
 git merge upstream/main --allow-unrelated-histories -X theirs -m "Update from template"
 ```
