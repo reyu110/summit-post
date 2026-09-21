@@ -7,3 +7,4 @@ posted_log.json
 .claude/
 .idea/
 used.json
+.venv/

@@ -1,0 +1,28 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    # Runs only in the template repo itself, to prove the tool installs and starts on every OS and Python
+    # version. Repos created from the template skip it and use none of their free Actions minutes.
+    if: ${{ github.event.repository.is_template }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Self-checks (installs the pinned packages exactly as a new user's first run does)
+        run: python run.py --test
+      - name: The dashboard starts from a clean checkout
+        run: python run.py --check

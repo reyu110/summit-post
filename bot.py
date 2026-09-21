@@ -391,7 +391,7 @@ def draft_persona(description):
     prompt = PERSONA_DRAFT_PROMPT.replace("{example}", example).replace("{description}", description.strip())
 
     def _ask():
-        resp = client.chat.completions.create(model=LLM_MODEL, max_tokens=2500, reasoning_effort="low",
+        resp = client.chat.completions.create(**_llm_kwargs(), max_tokens=2500,
                                               messages=[{"role": "user", "content": prompt}])
         return resp.choices[0].message.content.strip()
 
@@ -399,6 +399,13 @@ def draft_persona(description):
     if raw is None:
         raise RuntimeError("Couldn't reach the AI right now — please try again shortly.")
     return parse_persona_draft(raw)
+
+
+def _llm_kwargs():
+    """Groq retires models now and then, so LLM_MODEL (in .env, or a repo variable in the cloud) overrides the
+    default without touching code. Only the gpt-oss family understands reasoning_effort."""
+    model = os.environ.get("LLM_MODEL") or LLM_MODEL
+    return {"model": model, **({"reasoning_effort": "low"} if "gpt-oss" in model else {})}
 
 
 def generate_tweet(news_items=None, idea=None):
@@ -410,9 +417,8 @@ def generate_tweet(news_items=None, idea=None):
         system = "\n\n".join([build_system_prompt(profile, "idea" if idea else "news"),
                                _voice_examples_block(), _load_growth_playbook()])
         resp = client.chat.completions.create(
-            model=LLM_MODEL,
+            **_llm_kwargs(),
             max_tokens=300,
-            reasoning_effort="low",
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},

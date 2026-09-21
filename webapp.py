@@ -24,10 +24,15 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(), logging.FileHandler(LOG_PATH)],
 )
 
+logging.getLogger("werkzeug").setLevel(logging.WARNING)  # no line per dashboard poll
+
 app = Flask(__name__)
 app.jinja_env.auto_reload = True
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
+# Only answer requests addressed to this machine. Without this, a website open in another tab could use DNS
+# rebinding to reach the dashboard as if it were same-origin and, say, publish a post from your account.
+app.config["TRUSTED_HOSTS"] = ["localhost", "127.0.0.1"]
 scheduler = BackgroundScheduler()
 scheduler.start()
 
@@ -51,7 +56,7 @@ def _arm_automation():
     bot.schedule_day(scheduler, False)
 
 
-if automation["enabled"]:
+if automation["enabled"] and __name__ == "__main__":  # importing (e.g. from tests) must never arm real posting
     _arm_automation()
 
 
@@ -322,4 +327,9 @@ def logs():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8420, debug=False)
+    port = int(os.environ.get("PORT", 8420))
+    try:
+        app.run(host="127.0.0.1", port=port, debug=False)
+    except OSError:
+        raise SystemExit(f"Port {port} is already in use. Run `python run.py` (it finds a free port), "
+                         f"or set PORT to another number.")

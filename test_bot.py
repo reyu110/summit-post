@@ -131,6 +131,25 @@ def test_live_cloud_run_refuses_to_guess_the_timezone():
         tick.assert_not_called()
 
 
+def test_the_model_can_be_overridden_without_editing_code():
+    with mock.patch.dict(os.environ, {"LLM_MODEL": ""}):
+        default = bot._llm_kwargs()
+    assert default["model"] == bot.LLM_MODEL and default["reasoning_effort"] == "low"     # unchanged behaviour
+    with mock.patch.dict(os.environ, {"LLM_MODEL": "llama-3.3-70b-versatile"}):
+        other = bot._llm_kwargs()
+    assert other == {"model": "llama-3.3-70b-versatile"}                                   # no param it would reject
+
+
+def test_dashboard_only_answers_requests_addressed_to_this_machine():
+    import webapp
+    client = webapp.app.test_client()
+    for ok_host in ("localhost:8420", "localhost", "127.0.0.1:8421"):
+        assert client.get("/api/state", headers={"Host": ok_host}).status_code == 200
+    for bad_host in ("evil.example.com", "evil.example.com:8420", "localhost.evil.com", "127.0.0.1.evil.com:8420"):
+        assert client.get("/api/state", headers={"Host": bad_host}).status_code == 400
+    assert client.post("/api/post_now", json={"tweet": "x"}, headers={"Host": "evil.example.com"}).status_code == 400
+
+
 # ---------- niche profiles: what a post is about ----------
 
 def _rss(*items):

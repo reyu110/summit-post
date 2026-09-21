@@ -536,7 +536,7 @@ async function modalPersona() {
 function modalCloud() {
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   const cmds = [
-    ['1. Push your setup to your private GitHub repo', 'git add -A && git commit -m "my setup" && git push'],
+    ['1. Push your setup to your private GitHub repo', 'git add -A\ngit commit -m "my setup"\ngit push'],
     ['2. Upload your keys as secrets (they go straight from your .env to GitHub)', 'gh secret set -f .env'],
     ['4. Go live: set your timezone (detected from this browser). This switches the hourly job on', `gh variable set TZ --body ${tz}`],
   ];

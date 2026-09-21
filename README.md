@@ -1,10 +1,11 @@
-# Summit — an automated posting bot you run for free
+# Summit — an automated posting bot you run yourself, for free
 
 Turns what you care about into posts in your own voice and publishes them to X on a randomised,
-human-looking schedule. It can run from GitHub's servers, so your computer can be off.
+human-looking schedule. You set it up and manage it from a dashboard in your browser.
 
-Everything runs on free tiers: **Groq** writes the posts, **Buffer** publishes them, **GitHub Actions**
-runs it. Nothing passes through anyone else's server, and your keys stay in your own accounts.
+It runs on **your** computer with **your** free accounts. There is no server, no sign-up with this
+project, and nobody hosting anything for you. Optionally it can run from GitHub's servers instead, so
+your computer can be off.
 
 ## What it does
 
@@ -15,68 +16,118 @@ runs it. Nothing passes through anyone else's server, and your keys stay in your
   voice samples.
 - **Never repeats itself.** Every story and idea is used once.
 - **Posts at random times** inside a window you choose (default: 3 a day, 9am–6pm), not on the hour.
-- **You stay in control.** Automation is off until you switch it on, and the dashboard lets you draft,
-  edit and publish any post by hand.
+- **You stay in control.** Automation is off until you switch it on, and you can draft, edit and publish
+  any post by hand from the dashboard.
 
-## Setup (about 15 minutes)
+## Quick start (about 5 minutes, no git needed)
 
-You need: Python 3.11+, git, a GitHub account, and the [GitHub CLI](https://cli.github.com) (`gh`).
-
-1. **Copy this repo.** Click **Use this template → Create a new repository** and make it **private**.
-   Then clone it.
-2. **Create three free accounts.**
-   - [Groq](https://console.groq.com/keys): an API key.
-   - [Buffer](https://buffer.com): sign up, connect your X account as a channel, then create an API key
-     at publish.buffer.com/settings/api. (X's own API is no longer free, which is why posting goes
-     through Buffer.)
-3. **Run the setup wizard.**
+1. **Install Python 3.10 or newer** from [python.org](https://www.python.org/downloads/). On Windows,
+   tick *Add python.exe to PATH* in the installer.
+2. **Get the code.** On this page click **Code → Download ZIP** and unzip it.
+3. **Open a terminal in that folder and run:**
    ```bash
-   python3 -m venv venv && source venv/bin/activate
-   pip install -r requirements.txt
-   python webapp.py
+   python run.py
    ```
-   Open http://localhost:8420. The wizard checks each key live before letting you continue, drafts
-   your persona from a description of your niche, and checks your feeds.
-4. **Put it in the cloud.** The dashboard's **Cloud** button shows these commands:
+   On macOS/Linux use `python3 run.py`; on Windows, if `python` isn't found, use `py run.py`.
+   The first run sets up a private Python environment by itself (about a minute), then opens the
+   dashboard in your browser.
+4. **Follow the setup wizard.** It checks every key live before letting you continue, drafts your persona
+   from a description of your niche, and checks your feeds. You'll need two free accounts:
+   - [Groq](https://console.groq.com/keys): an API key. This writes the posts.
+   - [Buffer](https://buffer.com): sign up, connect your X account as a channel, then create an API key
+     at publish.buffer.com/settings/api. This publishes the posts. (X's own API is no longer free, which
+     is why posting goes through Buffer.)
+5. **Switch automation on** in the dashboard.
+
+In this mode posts go out while `run.py` is running **and your computer is awake**. Press Ctrl+C to stop;
+run the same command later to start again. Everything you set up is kept in this folder.
+
+## Run it with your computer off (optional, free)
+
+Instead of downloading the ZIP, click **Use this template → Create a new repository** (make it
+**private**) and clone it. You'll also need [git](https://git-scm.com) and the
+[GitHub CLI](https://cli.github.com) (`gh auth login`). Then, after the wizard, the dashboard's **Cloud**
+button shows these steps with your timezone filled in:
+
+1. Push your setup, then upload your keys as secrets:
    ```bash
-   git add -A && git commit -m "my setup" && git push
+   git add -A
+   git commit -m "my setup"
+   git push
    gh secret set -f .env
    ```
-5. **Test it.** On GitHub: **Actions → post → Run workflow** (leave *dry run* ticked). It writes one post
-   and prints it without publishing anything.
-6. **Go live.** Set your timezone; this switches the hourly job on:
+   (No `gh`? Add the same keys by hand under **Settings → Secrets and variables → Actions**.)
+2. **Test it.** On GitHub open **Actions → post → Run workflow** and leave *dry run* ticked. It writes one
+   post and prints it without publishing anything.
+3. **Go live.** Set your timezone; this switches the hourly job on:
    ```bash
    gh variable set TZ --body America/Toronto     # your timezone
    ```
 
-If you use the cloud job, keep the dashboard's automation switch **off**, or you'll post twice.
+Keep the dashboard's automation switch **off** while the cloud job is running, or you'll post twice.
 
-## How the cloud job works
+Once an hour a GitHub Actions job looks at today's random schedule and hands the next post to Buffer with
+its exact publish time. It saves its state back to your repo *before* posting, so a failed save can never
+cause a duplicate. If something breaks, the run turns red and GitHub emails you. Changes you make in the
+dashboard reach the cloud when you `git push`.
 
-Once an hour a GitHub Actions job wakes up, looks at today's random schedule, and hands the next post
-to Buffer with its exact publish time. State is saved back to the repo *before* posting, so a failed save
-can never cause a duplicate post. If something breaks, the run turns red and GitHub emails you.
-Changes you make locally (voice samples, persona, sources, schedule) reach the cloud when you `git push`.
+## Managing it from the dashboard
+
+Automation on/off and a live countdown · draft, edit and publish a post by hand · **Sources** (feeds and
+ideas) · **Persona** · **Voice samples** · **Growth playbook** · posting schedule · activity log · post
+history · **Health check** · **Cloud** instructions · **Setup** (re-run the wizard to change a key or your
+Buffer channel).
+
+## Privacy: what leaves your machine
+
+This project has no server and collects nothing. Your keys stay in a file called `.env` in this folder
+(git-ignored, so it's never committed) and, if you use the cloud option, in your own repo's encrypted
+secrets. The dashboard only answers requests addressed to your own computer.
+
+The only network calls are the ones you'd expect: **Groq** (your persona, voice samples and the story text,
+to write a post), **Buffer** (the finished post), the **feeds and articles** you chose, **GitHub** (only if
+you use the cloud option), and **Google Fonts** (the dashboard's typefaces).
 
 ## Costs and limits
 
-- Free tiers only, at the time of writing: Groq's free tier, Buffer's free plan (3 channels), and
-  GitHub's 2,000 free Actions minutes a month on private repos (this uses about 720).
+- Free tiers only, at the time of writing: Groq's free tier, Buffer's free plan (3 channels), and, for the
+  cloud option, GitHub's 2,000 free Actions minutes a month on private repos (this uses about 720).
 - **Buffer's free plan is the fragile part.** X now charges for its API, and Buffer's free plan is what
   makes this free. If Buffer changes that, posting is the piece that would need to change.
-- Feeds must be the publisher's own RSS feed. Google News links can't be read (the setup wizard tells
-  you when a feed is one of these).
+- Feeds must be the publisher's own RSS feed. Google News links can't be read (the wizard tells you when a
+  feed is one of these).
 - Check X's rules on automated accounts and AI-generated content before you turn posting on. You're
   responsible for what your account publishes.
 
+## Updating
+
+**ZIP users:** download the new ZIP and copy your `.env`, `persona.md`, `profile.json`, `voice_examples.txt`,
+`ideas.txt` and `schedule_config.json` into it.
+
+**Template users:** the first time,
+```bash
+git remote add upstream https://github.com/reyu110/summit-post-template.git
+git fetch upstream
+git merge upstream/main --allow-unrelated-histories -X theirs -m "Update from template"
+```
+(`-X theirs` takes the new code; your own data files aren't in the template, so they're untouched.) After that,
+just `git fetch upstream` and `git merge upstream/main`.
+
 ## Troubleshooting
 
-- **The cloud dry run fails with `403 Access denied` from Groq.** Some providers block cloud IP ranges.
-  Try again later, or open an issue with the log.
-- **The workflow run says "skipped".** The `TZ` variable isn't set yet. It's the on switch, so set it
-  once your dry run works: `gh variable set TZ --body <your timezone>`.
-- **A run went red.** Open it under Actions; the last lines say why. "Nothing new" is *not* an error:
-  a quiet feed just skips that slot.
+- **`python` isn't found.** Reinstall Python and tick *Add python.exe to PATH*, or try `py run.py` (Windows)
+  or `python3 run.py` (macOS/Linux).
+- **"Couldn't create the environment" on Linux.** Install the missing piece: `sudo apt install python3-venv`.
+- **The dashboard is on a different port than 8420.** Another program was using 8420; `run.py` picked the
+  next free one and prints the address.
+- **Groq stops working with a "model" error.** Groq occasionally retires models. Set `LLM_MODEL=` to a
+  current one in `.env` (or as a repository variable for the cloud job).
+- **The cloud dry run fails with `403 Access denied` from Groq.** Some providers block cloud IP ranges. Try
+  again later, or open an issue with the log.
+- **The workflow run says "skipped".** The `TZ` variable isn't set yet. It's the on switch, so set it once
+  your dry run works.
+- **A run went red.** Open it under Actions; the last lines say why. "Nothing new" is *not* an error: a quiet
+  feed just skips that slot.
 
 ## Files you'll edit (all from the dashboard, or by hand)
 
@@ -89,4 +140,8 @@ Changes you make locally (voice samples, persona, sources, schedule) reach the c
 | `growth_playbook.md` | Research-backed writing rules, re-read before every post |
 | `schedule_config.json` | Posts per day and the time window |
 
-`python test_bot.py` runs the self-checks.
+`python run.py --test` runs the self-checks; `python run.py --check` proves the dashboard starts.
+
+## License
+
+MIT. Provided as is, with no warranty and no hosted service.

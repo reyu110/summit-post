@@ -29,6 +29,7 @@ jobs:
     timeout-minutes: 10
     env:
       TZ: ${{ vars.TZ }} # your timezone, e.g. America/Toronto
+      LLM_MODEL: ${{ vars.LLM_MODEL }} # optional: override the default Groq model
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
       BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}

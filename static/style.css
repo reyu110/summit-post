@@ -439,7 +439,7 @@ details.src-block .btn{margin-top:6px}
 .summit-checks div:nth-child(6){animation-delay:.45s}
 
 .cmd{display:flex;align-items:center;gap:10px;background:#22384a;border-radius:12px;padding:10px 10px 10px 16px}
-.cmd code{flex:1;color:#c7e6d8;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;word-break:break-all;background:none;padding:0}
+.cmd code{flex:1;color:#c7e6d8;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;word-break:break-all;white-space:pre-wrap;background:none;padding:0}
 .cmd button{border:none;background:var(--mint);color:#fff;font:inherit;font-weight:800;font-size:12.5px;padding:8px 14px;
   border-radius:999px;cursor:pointer;flex:none;transition:transform .2s cubic-bezier(.3,1.5,.5,1)}
 .cmd button:hover{transform:scale(1.06)}
