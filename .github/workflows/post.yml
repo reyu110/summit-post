@@ -1,0 +1,43 @@
+name: post
+
+on:
+  schedule:
+    # Hourly at :17 (GitHub cron is UTC, and delays runs at the top of the hour). Every hour, not just office
+    # hours, so it works in any timezone; ticks with nothing due exit in seconds (~720 of the 2,000 free
+    # minutes a month on a private repo).
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only generate a tweet and print it (posts nothing)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: post
+  cancel-in-progress: false
+
+permissions:
+  contents: write # the run saves cloud_state.json back to the repo
+
+jobs:
+  tick:
+    # The TZ variable is the go-live switch: until you set it (last step of setup), scheduled runs are skipped.
+    # Manual runs are always allowed, so you can dry-run the setup before going live.
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.TZ != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TZ: ${{ vars.TZ }} # your timezone, e.g. America/Toronto
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      BUFFER_CHANNEL_ID: ${{ secrets.BUFFER_CHANNEL_ID }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python cloud_run.py ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '--dry-run' || '' }}

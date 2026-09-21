@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Summit — Post Automation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ============ ANIMATED MOUNTAIN SCENE ============ -->
+<div class="scene" id="scene">
+  <div class="sky"></div>
+
+  <div class="sun-wrap" data-depth="0.6">
+    <div class="sun"><div class="sun-core"></div></div>
+  </div>
+
+  <div class="clouds">
+    <div class="cloud cloud-1"><span></span><span></span><span></span></div>
+    <div class="cloud cloud-2"><span></span><span></span><span></span></div>
+    <div class="cloud cloud-3"><span></span><span></span><span></span></div>
+    <div class="cloud cloud-4"><span></span><span></span><span></span></div>
+  </div>
+
+  <div class="birds">
+    <svg class="bird bird-1" viewBox="0 0 40 20"><path d="M2 12 Q10 2 18 11 Q26 2 34 12" /></svg>
+    <svg class="bird bird-2" viewBox="0 0 40 20"><path d="M2 12 Q10 2 18 11 Q26 2 34 12" /></svg>
+    <svg class="bird bird-3" viewBox="0 0 40 20"><path d="M2 12 Q10 2 18 11 Q26 2 34 12" /></svg>
+  </div>
+
+  <!-- far peaks -->
+  <svg class="layer layer-far" data-depth="0.12" viewBox="0 0 1440 620" preserveAspectRatio="xMidYMax slice">
+    <defs><clipPath id="farClip"><path d="M0 620 L0 380 L150 250 L260 330 L400 190 L560 340 L660 270 L820 400 L940 300 L1080 210 L1220 340 L1330 270 L1440 360 L1440 620Z"/></clipPath></defs>
+    <path fill="#a6b8ea" d="M0 620 L0 380 L150 250 L260 330 L400 190 L560 340 L660 270 L820 400 L940 300 L1080 210 L1220 340 L1330 270 L1440 360 L1440 620Z"/>
+    <g clip-path="url(#farClip)" fill="#ffffff" opacity=".9">
+      <path d="M320 100 L480 100 L480 238 L456 226 L432 242 L408 228 L384 244 L356 230 L320 244 Z"/>
+      <path d="M1000 120 L1160 120 L1160 256 L1136 244 L1112 260 L1088 246 L1064 262 L1036 248 L1000 262 Z"/>
+      <path d="M90 160 L215 160 L215 296 L192 284 L168 300 L144 286 L118 302 L90 290 Z"/>
+    </g>
+  </svg>
+
+  <!-- mid peaks -->
+  <svg class="layer layer-mid" data-depth="0.26" viewBox="0 0 1440 560" preserveAspectRatio="xMidYMax slice">
+    <defs><clipPath id="midClip"><path d="M0 560 L0 420 L120 330 L250 410 L380 280 L520 400 L640 320 L780 430 L900 340 L1040 250 L1180 380 L1300 320 L1440 400 L1440 560Z"/></clipPath></defs>
+    <path fill="#4f97b8" d="M0 560 L0 420 L120 330 L250 410 L380 280 L520 400 L640 320 L780 430 L900 340 L1040 250 L1180 380 L1300 320 L1440 400 L1440 560Z"/>
+    <g clip-path="url(#midClip)" fill="#ffffff" opacity=".96">
+      <path d="M300 190 L460 190 L460 326 L436 314 L412 330 L388 316 L364 332 L336 318 L300 332 Z"/>
+      <path d="M960 160 L1120 160 L1120 296 L1096 284 L1072 300 L1048 286 L1024 302 L996 288 L960 302 Z"/>
+      <path d="M50 240 L190 240 L190 372 L166 360 L142 376 L118 362 L92 378 L50 366 Z"/>
+    </g>
+  </svg>
+
+  <!-- near peaks -->
+  <svg class="layer layer-near" data-depth="0.42" viewBox="0 0 1440 520" preserveAspectRatio="xMidYMax slice">
+    <defs><clipPath id="nearClip"><path d="M0 520 L0 440 L170 300 L340 430 L470 350 L620 460 L760 360 L900 470 L1030 390 L1180 300 L1320 420 L1440 350 L1440 520Z"/></clipPath></defs>
+    <path fill="#2e9375" d="M0 520 L0 440 L170 300 L340 430 L470 350 L620 460 L760 360 L900 470 L1030 390 L1180 300 L1320 420 L1440 350 L1440 520Z"/>
+    <g clip-path="url(#nearClip)" fill="#ffffff">
+      <path d="M80 210 L260 210 L260 352 L234 340 L208 356 L182 342 L156 358 L128 344 L80 358 Z"/>
+      <path d="M1090 210 L1270 210 L1270 352 L1244 340 L1218 356 L1192 342 L1166 358 L1138 344 L1090 358 Z"/>
+      <path d="M690 280 L830 280 L830 404 L806 392 L782 408 L758 394 L732 410 L690 398 Z"/>
+    </g>
+  </svg>
+
+  <!-- forest hills -->
+  <svg class="layer layer-hills" data-depth="0.6" viewBox="0 0 1440 340" preserveAspectRatio="xMidYMax slice">
+    <path fill="#1f8a63" d="M0 340 L0 210 Q180 140 360 205 Q540 268 720 195 Q900 122 1080 200 Q1260 275 1440 205 L1440 340Z"/>
+    <g class="trees" fill="#146b4c">
+      <path d="M70 268 l17 -44 l17 44 Z M70 284 l17 -44 l17 44 Z"/>
+      <path d="M190 252 l15 -40 l15 40 Z M190 267 l15 -40 l15 40 Z"/>
+      <path d="M300 262 l16 -42 l16 42 Z M300 278 l16 -42 l16 42 Z"/>
+      <path d="M420 254 l18 -46 l18 46 Z M420 271 l18 -46 l18 46 Z"/>
+      <path d="M560 240 l20 -50 l20 50 Z M560 260 l20 -50 l20 50 Z"/>
+      <path d="M690 232 l16 -42 l16 42 Z M690 248 l16 -42 l16 42 Z"/>
+      <path d="M810 240 l18 -46 l18 46 Z M810 257 l18 -46 l18 46 Z"/>
+      <path d="M940 246 l19 -48 l19 48 Z M940 265 l19 -48 l19 48 Z"/>
+      <path d="M1080 238 l17 -44 l17 44 Z M1080 254 l17 -44 l17 44 Z"/>
+      <path d="M1210 250 l18 -46 l18 46 Z M1210 267 l18 -46 l18 46 Z"/>
+      <path d="M1340 262 l16 -42 l16 42 Z M1340 278 l16 -42 l16 42 Z"/>
+    </g>
+  </svg>
+
+  <svg class="layer layer-fore" data-depth="0.85" viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice">
+    <path fill="#136b4f" d="M0 200 L0 120 Q220 60 440 118 Q660 176 880 112 Q1100 48 1320 110 L1440 92 L1440 200Z"/>
+  </svg>
+
+  <div class="haze"></div>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="app">
+
+  <!-- ---------- SETUP WIZARD ---------- -->
+  <section id="setup-view" class="view">
+    <header class="wiz-head">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 48 48"><path d="M4 40 L18 14 L27 30 L33 20 L44 40 Z" fill="#fff"/><path d="M18 14 L11.5 26 L16 27.5 L19.5 24.5 L23 29 L27 30 Z" fill="#dff3ff"/></svg>
+        <div>
+          <h1>Summit</h1>
+          <p>Let's get your posting bot up the mountain.</p>
+        </div>
+      </div>
+      <div class="wiz-progress">
+        <div class="wiz-progress-fill" id="wizFill"></div>
+        <span id="wizPct">0%</span>
+      </div>
+    </header>
+
+    <div class="wiz-body">
+      <!-- trail -->
+      <aside class="trail">
+        <div class="trail-line"><div class="trail-line-fill" id="trailFill"></div></div>
+        <ul id="trailList"></ul>
+        <div class="hiker" id="hiker">
+          <svg viewBox="0 0 40 40">
+            <circle cx="20" cy="11" r="7" fill="#ffd9a8"/>
+            <path d="M13 9 a7 7 0 0 1 14 0 z" fill="#e8724c"/>
+            <rect x="15" y="18" width="10" height="13" rx="4" fill="#4a90d9"/>
+            <rect x="25" y="19" width="7" height="9" rx="3" fill="#e8724c"/>
+            <rect x="16" y="30" width="3.5" height="8" rx="1.7" fill="#3a5a80"/>
+            <rect x="20.5" y="30" width="3.5" height="8" rx="1.7" fill="#3a5a80"/>
+          </svg>
+        </div>
+      </aside>
+
+      <!-- step cards -->
+      <main class="steps" id="steps">
+
+        <article class="step-card" data-step="0">
+          <div class="card-icon">🏕️</div>
+          <h2>Welcome to base camp</h2>
+          <p class="lead">This bot turns what you care about — articles from your favourite feeds, or your own notes — into posts in your voice, and publishes them to X at randomised, human-looking times.</p>
+          <div class="mini-grid">
+            <div class="mini"><span>🧠</span><b>Groq</b><i>writes the post</i></div>
+            <div class="mini"><span>📡</span><b>Feeds & ideas</b><i>your material</i></div>
+            <div class="mini"><span>📮</span><b>Buffer</b><i>publishes it</i></div>
+          </div>
+          <p class="note">Every service below has a free tier. We verify each step before moving on, so nothing breaks silently at 2am.</p>
+          <div class="actions"><button class="btn btn-primary" data-next>Start climbing →</button></div>
+        </article>
+
+        <article class="step-card" data-step="1">
+          <div class="card-icon">🧠</div>
+          <h2>Connect Groq</h2>
+          <p class="lead">Groq runs the language model that writes each post. Free tier, no card required.</p>
+          <a class="helper-link" href="https://console.groq.com/keys" target="_blank" rel="noopener">Get a key at console.groq.com/keys ↗</a>
+          <div class="field">
+            <label for="groqKey">Groq API key</label>
+            <input type="password" id="groqKey" placeholder="gsk_..." autocomplete="off" spellcheck="false">
+            <button class="reveal" data-reveal="groqKey" type="button">👁</button>
+          </div>
+          <div class="verdict" id="verdict-groq"></div>
+          <div class="actions">
+            <button class="btn btn-ghost" data-back>← Back</button>
+            <button class="btn btn-primary" data-verify="groq">Verify key</button>
+          </div>
+        </article>
+
+        <article class="step-card" data-step="3">
+          <div class="card-icon">📮</div>
+          <h2>Connect Buffer</h2>
+          <p class="lead">Buffer does the actual publishing to X. X's own API dropped its free tier, so we go through Buffer's free plan instead.</p>
+          <a class="helper-link" href="https://publish.buffer.com/settings/api" target="_blank" rel="noopener">Get a key at publish.buffer.com/settings/api ↗</a>
+          <div class="field">
+            <label for="bufferKey">Buffer API key</label>
+            <input type="password" id="bufferKey" placeholder="1/abc..." autocomplete="off" spellcheck="false">
+            <button class="reveal" data-reveal="bufferKey" type="button">👁</button>
+          </div>
+          <div class="verdict" id="verdict-buffer"></div>
+          <div class="actions">
+            <button class="btn btn-ghost" data-back>← Back</button>
+            <button class="btn btn-primary" data-verify="buffer">Verify key</button>
+          </div>
+        </article>
+
+        <article class="step-card" data-step="4">
+          <div class="card-icon">🐦</div>
+          <h2>Pick your channel</h2>
+          <p class="lead">These are the accounts connected inside Buffer. Choose the one this bot should post to.</p>
+          <div class="channels" id="channels"><div class="loading-row"><span class="spinner"></span> Looking for channels…</div></div>
+          <p class="note">Nothing here? Connect your X account at <a href="https://publish.buffer.com" target="_blank" rel="noopener">publish.buffer.com</a> first, then <button class="linkbtn" id="refreshChannels" type="button">refresh</button>.</p>
+          <div class="verdict" id="verdict-channel"></div>
+          <div class="actions">
+            <button class="btn btn-ghost" data-back>← Back</button>
+            <button class="btn btn-primary" id="channelNext" disabled>Continue →</button>
+          </div>
+        </article>
+        <article class="step-card" data-step="4">
+          <div class="card-icon">🎯</div>
+          <h2>What do you post about?</h2>
+          <p class="lead">Describe your niche and how you sound, in a sentence or two. The bot drafts a persona from it, and you can edit every word.</p>
+          <div class="field">
+            <label for="nicheDesc">Your niche</label>
+            <textarea id="nicheDesc" rows="3" placeholder="e.g. I post about woodworking projects and tool reviews. Dry humor, beginner-friendly, no gatekeeping."></textarea>
+          </div>
+          <button class="btn btn-soft" id="draftPersonaBtn" type="button">Draft my persona</button>
+          <div class="persona-out hidden" id="personaOut">
+            <div class="field">
+              <label for="nicheTopic">Topic <small>(fills in "today's real ___ stories")</small></label>
+              <input type="text" id="nicheTopic" maxlength="40" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="personaText">Persona <small>(editable)</small></label>
+              <textarea id="personaText" rows="11" class="mono"></textarea>
+            </div>
+          </div>
+          <div class="verdict" id="verdict-niche"></div>
+          <div class="actions">
+            <button class="btn btn-ghost" data-back>← Back</button>
+            <button class="btn btn-primary" id="saveNicheBtn" disabled>Save persona →</button>
+          </div>
+        </article>
+
+        <article class="step-card" data-step="5">
+          <div class="card-icon">📡</div>
+          <h2>Where do your posts come from?</h2>
+          <p class="lead">Pick at least one. The bot mixes them: it reads stories from your feeds and turns your own notes into posts.</p>
+
+          <div class="src-block">
+            <h4>📰 RSS feeds</h4>
+            <p class="note">Blogs, news sites and subreddits all have one (look for "RSS" or "Feed"; for a subreddit, add <code>.rss</code> to its address). Use the publisher's own feed, because Google News links can't be read.</p>
+            <div class="feed-add">
+              <input type="url" id="feedUrl" placeholder="https://example.com/feed.xml" autocomplete="off" spellcheck="false">
+              <button class="btn btn-soft" id="addFeedBtn" type="button">Add</button>
+            </div>
+            <div class="verdict" id="verdict-feed"></div>
+            <ul class="feed-list" id="feedList"></ul>
+          </div>
+
+          <div class="src-block">
+            <h4>💡 Your idea bank <small>(optional)</small></h4>
+            <p class="note">Notes, wins, things you learned — one per line. The bot turns them into posts in your voice, in order, using only what you wrote.</p>
+            <textarea id="ideasText" rows="4" placeholder="Finished my first dovetail joint. Gaps everywhere, but it holds."></textarea>
+          </div>
+
+          <details class="src-block" id="finnhubBlock">
+            <summary>📈 Finance niche? Add Finnhub market news</summary>
+            <div class="field">
+              <label for="finnhubKey">Finnhub API key <small>(free at finnhub.io/register)</small></label>
+              <input type="password" id="finnhubKey" placeholder="c8f2..." autocomplete="off" spellcheck="false">
+              <button class="reveal" data-reveal="finnhubKey" type="button">👁</button>
+            </div>
+            <div class="verdict" id="verdict-finnhub"></div>
+            <button class="btn btn-soft" data-verify="finnhub" type="button">Verify key</button>
+          </details>
+
+          <div class="verdict" id="verdict-sources"></div>
+          <div class="actions">
+            <button class="btn btn-ghost" data-back>← Back</button>
+            <button class="btn btn-primary" id="saveSourcesBtn">Save sources →</button>
+          </div>
+        </article>
+
+
+        <article class="step-card" data-step="5">
+          <div class="card-icon">🎙️</div>
+          <h2>Teach it your voice</h2>
+          <p class="lead">Paste up to five of your own past tweets. The model copies your capitalisation, pacing and punctuation from these — it's the single biggest quality lever.</p>
+          <div class="voice-list" id="voiceList"></div>
+          <div class="verdict" id="verdict-voice"></div>
+          <div class="actions">
+            <button class="btn btn-ghost" data-back>← Back</button>
+            <button class="btn btn-soft" data-next>Skip for now</button>
+            <button class="btn btn-primary" id="saveVoiceBtn">Save voice →</button>
+          </div>
+        </article>
+
+        <article class="step-card" data-step="6">
+          <div class="card-icon">⏰</div>
+          <h2>Set your rhythm</h2>
+          <p class="lead">Posts are spread randomly inside this window — never the same minute twice, so it reads as human.</p>
+          <div class="sched-grid">
+            <div class="sched-item">
+              <label>Posts per day</label>
+              <div class="stepper">
+                <button type="button" data-spin="postsPerDay" data-dir="-1">−</button>
+                <input type="number" id="postsPerDay" value="3" min="1" max="8" readonly>
+                <button type="button" data-spin="postsPerDay" data-dir="1">+</button>
+              </div>
+            </div>
+            <div class="sched-item">
+              <label>Window opens</label>
+              <div class="stepper">
+                <button type="button" data-spin="startHour" data-dir="-1">−</button>
+                <input type="number" id="startHour" value="9" min="0" max="23" readonly>
+                <button type="button" data-spin="startHour" data-dir="1">+</button>
+              </div>
+            </div>
+            <div class="sched-item">
+              <label>Window closes</label>
+              <div class="stepper">
+                <button type="button" data-spin="endHour" data-dir="-1">−</button>
+                <input type="number" id="endHour" value="18" min="1" max="24" readonly>
+                <button type="button" data-spin="endHour" data-dir="1">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="preview-times" id="previewTimes"></div>
+          <div class="verdict" id="verdict-sched"></div>
+          <div class="actions">
+            <button class="btn btn-ghost" data-back>← Back</button>
+            <button class="btn btn-primary" id="saveSchedBtn">Save rhythm →</button>
+          </div>
+        </article>
+
+        <article class="step-card summit-card" data-step="7">
+          <div class="summit-burst">
+            <div class="card-icon big">🏔️</div>
+          </div>
+          <h2>You're at the summit</h2>
+          <p class="lead">Everything's verified and wired up. Your bot is ready to run.</p>
+          <div class="summit-checks" id="summitChecks"></div>
+          <div class="actions center">
+            <button class="btn btn-primary btn-lg" id="toDashboard">Open the dashboard →</button>
+          </div>
+        </article>
+      </main>
+    </div>
+  </section>
+
+  <!-- ---------- DASHBOARD ---------- -->
+  <section id="dashboard-view" class="view hidden">
+    <header class="dash-head">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 48 48"><path d="M4 40 L18 14 L27 30 L33 20 L44 40 Z" fill="#fff"/><path d="M18 14 L11.5 26 L16 27.5 L19.5 24.5 L23 29 L27 30 Z" fill="#dff3ff"/></svg>
+        <div>
+          <h1>Summit</h1>
+          <p id="dashSub">Post automation control</p>
+        </div>
+      </div>
+      <div class="head-right">
+        <button class="chip" id="healthBtn"><span>🩺</span> Health check</button>
+        <button class="chip" id="reSetupBtn"><span>⚙️</span> Setup</button>
+      </div>
+    </header>
+
+    <div class="dash-grid">
+
+      <div class="panel panel-hero">
+        <div class="hero-left">
+          <div class="status-ring" id="statusRing">
+            <div class="status-dot"></div>
+          </div>
+          <div>
+            <h3 id="statusTitle">Automation paused</h3>
+            <p id="statusSub">Nothing is scheduled right now.</p>
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="autoToggle">
+          <span class="slider"><span class="knob"></span></span>
+        </label>
+      </div>
+
+      <div class="panel stat-row">
+        <div class="stat"><b id="statNext">—</b><i>next post</i></div>
+        <div class="stat"><b id="statToday">0</b><i>queued today</i></div>
+        <div class="stat"><b id="statTotal">0</b><i>posts all-time</i></div>
+        <div class="stat"><b id="statVoice">0</b><i>voice samples</i></div>
+      </div>
+
+      <div class="panel panel-compose">
+        <div class="panel-title"><span>✍️</span><h3>Compose</h3></div>
+        <p class="panel-note">Draft a post from your sources, edit it, then publish on your terms.</p>
+        <button class="btn btn-primary btn-block" id="previewBtn">Draft a post</button>
+        <div class="compose-out hidden" id="composeOut">
+          <div class="headline-tag" id="headlineTag"></div>
+          <textarea id="draftText" maxlength="280" rows="4"></textarea>
+          <div class="compose-foot">
+            <span class="counter" id="charCount">0 / 280</span>
+            <div>
+              <button class="btn btn-ghost" id="redraftBtn">Redraft</button>
+              <button class="btn btn-post" id="postBtn">Publish to X</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-schedule">
+        <div class="panel-title"><span>⏱️</span><h3>Today's slots</h3></div>
+        <ul class="slots" id="slotList"><li class="empty">Automation is off.</li></ul>
+        <button class="btn btn-soft btn-block" id="schedBtn">Adjust rhythm</button>
+      </div>
+
+      <div class="panel panel-tools">
+        <div class="panel-title"><span>🧰</span><h3>Tuning</h3></div>
+        <button class="tool" id="sourcesBtn"><span>📡</span><b>Sources</b><i id="sourcesSub">Feeds, ideas and news</i></button>
+        <button class="tool" id="personaBtn"><span>🎯</span><b>Persona</b><i>Who the bot writes as</i></button>
+        <button class="tool" id="cloudBtn"><span>☁️</span><b>Cloud</b><i>Post with your computer off</i></button>
+        <button class="tool" id="voiceBtn"><span>🎙️</span><b>Voice samples</b><i>Teach it how you write</i></button>
+        <button class="tool" id="playbookBtn"><span>📈</span><b>Growth playbook</b><i>Rules that shape every post</i></button>
+        <button class="tool" id="logsBtn"><span>📜</span><b>Activity log</b><i>What the bot has been doing</i></button>
+      </div>
+
+      <div class="panel panel-history">
+        <div class="panel-title"><span>🗂️</span><h3>Recent posts</h3></div>
+        <ul class="history" id="historyList"><li class="empty">No posts yet.</li></ul>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- ---------- MODALS ---------- -->
+<div class="modal-back hidden" id="modalBack">
+  <div class="modal" id="modal">
+    <button class="modal-x" id="modalX">✕</button>
+    <h3 id="modalTitle">Title</h3>
+    <div id="modalBody"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+<canvas id="confetti"></canvas>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
