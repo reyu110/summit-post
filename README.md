@@ -160,4 +160,7 @@ just `git fetch upstream` and `git merge upstream/main`.
 
 ## License
 
-MIT. Provided as is, with no warranty and no hosted service.
+[The Prosperity Public License 3.0.0](LICENSE). In plain English: free for personal, hobby,
+noncommercial and nonprofit/educational/government use. Commercial use gets a 30-day free trial,
+after which a commercial user needs to work out a separate license with the contributor. Provided
+as is, with no warranty and no hosted service.
