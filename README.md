@@ -18,6 +18,8 @@ your computer can be off.
 - **Posts at random times** inside a window you choose (default: 3 a day, 9am–6pm), not on the hour.
 - **You stay in control.** Automation is off until you switch it on, and you can draft, edit and publish
   any post by hand from the dashboard.
+  <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/62de1e0c-eed9-45d0-b18a-b7b269aba323" />
+
 
 ## Quick start (about 5 minutes, no git needed)
 
